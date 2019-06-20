@@ -19,3 +19,4 @@ meta_key => dt_repair_post
 meta_value => id of new connection created for clone
 ```
 - Plugin uses wp cron for work, so all you need to do is set meta as mentioned in previous step
+- Please note that this add-on was tested for single-site installation with external connections.
