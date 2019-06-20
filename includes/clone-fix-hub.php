@@ -2,10 +2,10 @@
 /**
  * Functions  performed in hub
  *
- * @package distributor-{ Add-on slug }
+ * @package distributor-clone-fix
  */
 
-namespace Distributor\{ Add - on namespace }Hub;
+namespace Distributor\CloneFixHub;
 
 /**
  * Setup actions

@@ -2,10 +2,10 @@
 /**
  * Functions  performed in spoke
  *
- * @package distributor-{ Add-on slug }
+ * @package distributor-clone-fix
  */
 
-namespace Distributor\{ Add - on namespace }Spoke;
+namespace Distributor\CloneFixSpoke;
 
 /**
  * Setup actions
