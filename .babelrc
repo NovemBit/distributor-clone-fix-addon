@@ -1,0 +1,15 @@
+{
+	"presets": [
+		[
+			"minify",
+			{
+				"mangle": {
+					"topLevel": true,
+					"exclude": { "_inherits": true }
+				}
+			}
+		],
+		"@babel/preset-env"
+	],
+	"comments": false
+}
