@@ -1,3 +1,7 @@
+### NPM ###
+package-lock.json
+node_modules
+
 ### Composer ###
 /vendor/
 composer.lock
@@ -58,3 +62,6 @@ ehthumbs_vista.db
 
 # Custom shell scripts for local development
 deploy.sh
+
+# Transpiled output
+build
