@@ -8,8 +8,11 @@
 /* Require plug-in files */
 require_once __DIR__ . '/includes/clone-fix-hub.php';
 require_once __DIR__ . '/includes/clone-fix-spoke.php';
+require_once __DIR__ . '/includes/ui.php';
+require_once __DIR__ . '/includes/utils.php';
 
 /* Call the setup functions */
-\Distributor\CloneFixHub\setup();
+\DT\NbAddon\CloneFix\Hub\setup();
 
-\Distributor\CloneFixSpoke\setup();
+\DT\NbAddon\CloneFix\Spoke\setup();
+\DT\NbAddon\CloneFix\Ui\setup();
