@@ -1,0 +1,19 @@
+{
+  "name": "distributor-clone-fix-addon",
+  "version": "1.0.0",
+  "description": "Fix external connection subscriptions for cloned sites",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NovemBit/distributor-clone-fix-addon.git"
+  },
+  "author": "Novembit",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NovemBit/distributor-clone-fix-addon/issues"
+  },
+  "homepage": "https://github.com/NovemBit/distributor-clone-fix-addon#readme"
+}
