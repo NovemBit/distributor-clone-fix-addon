@@ -77,7 +77,7 @@ function display_bulk_fix( $actions ) {
  */
 function add_bulk_script( $hook ) {
 	if ( 'edit.php' === $hook ) {
-		wp_enqueue_script( 'dt_bulk_clone_fix', plugins_url( 'assets/js/bulk.js', __DIR__ ), [], CLONE_FIX_VERSION, true );
+		wp_enqueue_script( 'dt_bulk_clone_fix', plugins_url( 'build/js/bulk.js', __DIR__ ), [], CLONE_FIX_VERSION, true );
 		wp_localize_script(
 			'dt_bulk_clone_fix',
 			'cloneFixData',
