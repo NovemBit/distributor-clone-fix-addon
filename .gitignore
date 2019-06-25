@@ -54,3 +54,7 @@ ehthumbs_vista.db
 
 # Windows shortcuts
 *.lnk
+
+
+# Custom shell scripts for local development
+deploy.sh
