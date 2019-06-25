@@ -18,4 +18,5 @@ require_once ABSPATH . '/wp-admin/includes/plugin.php';
 if ( ! is_plugin_active( 'distributor/distributor.php' ) ) {
 	return;
 }
+define( 'CLONE_FIX_VERSION', '1.0.0' );
 require_once plugin_dir_path( __FILE__ ) . 'manager.php';
