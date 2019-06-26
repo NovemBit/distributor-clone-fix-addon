@@ -60,56 +60,60 @@ function push_post_data( $posts, $connection_id ) {
 	}
 
 	$external_connection_class = \Distributor\Connections::factory()->get_registered( 'external' )['wp'];
-	$result                    = [];
 	if ( empty( $hosts ) ) {
 		$result = [
-			'status'  => 'failure',
-			'message' => 'Selected posts have not distributed via selected connection',
+			'status' => 'failure',
+			'data'   => 'Selected posts have not distributed via selected connection',
 		];
-	}
-	foreach ( $hosts as $connection_id => $host ) {
-		$url                      = $host['host'] . '/wp/v2/distributor/repair-clone';
-		$external_connection_auth = get_post_meta( $connection_id, 'dt_external_connection_auth', true );
-		$auth_handler             = new $external_connection_class::$auth_handler_class( $external_connection_auth );
+	} else {
+		$result = [
+			'status' => 'success',
+			'data'   => [],
+		];
+		foreach ( $hosts as $connection_id => $host ) {
+			$url                      = $host['host'] . '/wp/v2/distributor/repair-clone';
+			$external_connection_auth = get_post_meta( $connection_id, 'dt_external_connection_auth', true );
+			$auth_handler             = new $external_connection_class::$auth_handler_class( $external_connection_auth );
 
-		$response = wp_remote_post(
-			$url,
-			$auth_handler->format_post_args(
-				[
+			$response = wp_remote_post(
+				$url,
+				$auth_handler->format_post_args(
+					[
 
-					'timeout' => 60,
+						'timeout' => 60,
 
-					'body'    => $host['posts'],
-				]
-			)
-		);
-		if ( ! is_wp_error( $response ) ) {
-			$data = json_decode( wp_remote_retrieve_body( $response ), true );
+						'body'    => $host['posts'],
+					]
+				)
+			);
+			if ( ! is_wp_error( $response ) ) {
+				$data = json_decode( wp_remote_retrieve_body( $response ), true );
 
-			foreach ( $data as $post_id => $items ) {
-				$connection_map = get_post_meta( $post_id, 'dt_connection_map', true );
-				if ( empty( $connection_map ) || empty( $connection_map['external'] ) ) {
-					$connection_map = [ 'external' => [] ];
-				}
-				if ( ! in_array( $connection_id, array_keys( $connection_map['external'] ), true ) ) {
-					$connection_map['external'][ $connection_id ] = [
-						'post_id' => $items['remote_id'],
-						'time'    => time(),
-					];
-
-					if ( ! empty( $items['remote_id'] ) && ! empty( $items['signature'] ) ) {
-						$subscription_id = \Distributor\Subscriptions\create_subscription( $post_id, $items['remote_id'], $host['host'], $items['signature'] );
+				foreach ( $data as $post_id => $items ) {
+					$connection_map = get_post_meta( $post_id, 'dt_connection_map', true );
+					if ( empty( $connection_map ) || empty( $connection_map['external'] ) ) {
+						$connection_map = [ 'external' => [] ];
 					}
+					if ( ! in_array( $connection_id, array_keys( $connection_map['external'] ), true ) ) {
+						$connection_map['external'][ $connection_id ] = [
+							'post_id' => $items['remote_id'],
+							'time'    => time(),
+						];
+
+						if ( ! empty( $items['remote_id'] ) && ! empty( $items['signature'] ) ) {
+							$subscription_id = \Distributor\Subscriptions\create_subscription( $post_id, $items['remote_id'], $host['host'], $items['signature'] );
+						}
+					}
+					$result['data'][ $post_id ] = [ 'status' => 'success' ];
+					update_post_meta( $post_id, 'dt_connection_map', $connection_map );
+					delete_post_meta( $post_id, 'dt_repair_post', $connection_id );
 				}
-				$result[ $post_id ] = $data;
-				update_post_meta( $post_id, 'dt_connection_map', $connection_map );
-				delete_post_meta( $post_id, 'dt_repair_post', $connection_id );
+			} else {
+				$result['data'][ $post_id ] = [
+					'status' => 'failure',
+					'info'   => $response->get_error_messages(),
+				];
 			}
-		} else {
-			$result[ $post_id ] = [
-				'status' => 'failure',
-				'info'   => $response->get_error_messages(),
-			];
 		}
 	}
 	return $result;

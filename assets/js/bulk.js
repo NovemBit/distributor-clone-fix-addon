@@ -69,11 +69,70 @@ document.addEventListener('DOMContentLoaded', () => {
 		const http = new window.XMLHttpRequest();
 		http.onreadystatechange = function() {
 			if (http.readyState == 4 && http.status == 200) {
-				console.log(http.responseText);
+				const { status, data } = JSON.parse(http.response);
+				if (status === 'failure') {
+					showGeneralError(data);
+				} else {
+					showMessages(data);
+				}
 			}
 		};
 		http.open('post', window.ajaxurl);
 		http.send(data);
+	}
+
+	function showGeneralError(text) {
+		const parent = document.getElementById('wpbody');
+		const container = document.createElement('div');
+		container.className = 'dt-cf-error-message';
+		container.innerText = text;
+		parent.insertBefore(container, parent.firstChild);
+	}
+	function showMessages(data) {
+		const res = {
+			success: [],
+			error: [],
+		};
+		for (let i in data) {
+			if (Object.prototype.hasOwnProperty.call(data, i)) {
+				if (data[i].status === 'failure') {
+					res.error.push({ id: i, info: data[i].info });
+				} else {
+					res.success.push(i);
+				}
+			}
+		}
+		const parent = document.getElementById('wpbody');
+		if (res.success.length > 0) {
+			let message = 'Connection fixed for ';
+			res.success.forEach(id => {
+				message += ` , ${id}`;
+			});
+			message = `${message} posts.`;
+			const successContainer = document.createElement('div');
+			successContainer.className = 'dt-cf-success-message';
+			successContainer.innerText = message;
+			parent.insertBefore(successContainer, parent.firstChild);
+		}
+		if (res.error.length > 0) {
+			const errorContainer = document.createElement('div');
+			errorContainer.className = 'dt-cf-error-message';
+			res.error.forEach(error => {
+				const { info } = error;
+				if (Array.isArray(info)) {
+					info.forEach(msg => {
+						const errorMsg = document.createElement('p');
+						errorMsg.innerText = msg;
+						errorContainer.appendChild(errorMsg);
+					});
+				} else {
+					const errorMsg = document.createElement('p');
+					errorMsg.innerText = error;
+					errorContainer.appendChild(errorMsg);
+				}
+			});
+			parent.insertBefore(errorContainer, parent.firstChild);
+		}
 	}
 
 	/**
