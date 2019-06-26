@@ -13,10 +13,22 @@
  * @package distributor-clone-fix
  */
 
-/* Bail out if the "parent" plug-in insn't active */
-require_once ABSPATH . '/wp-admin/includes/plugin.php';
-if ( ! is_plugin_active( 'distributor/distributor.php' ) ) {
-	return;
+/**
+ * Bootstrap function
+ */
+function dt_clone_fix_add_on_bootstrap() {
+	if ( ! function_exists( '\Distributor\ExternalConnectionCPT\setup' ) ) {
+		if ( is_admin() ) {
+			add_action(
+				'admin_notices',
+				function() {
+					printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( 'notice notice-error' ), esc_html( 'You need to have Distributor plug-in activated to run the {Add-on name}.', 'distributor-acf' ) );
+				}
+			);
+		}
+		return;
+	}
+	define( 'CLONE_FIX_VERSION', '1.0.0' );
+	require_once plugin_dir_path( __FILE__ ) . 'manager.php';
 }
-define( 'CLONE_FIX_VERSION', '1.0.0' );
-require_once plugin_dir_path( __FILE__ ) . 'manager.php';
+add_action( 'plugins_loaded', 'dt_clone_fix_add_on_bootstrap' );
