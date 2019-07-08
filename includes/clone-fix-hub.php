@@ -36,7 +36,26 @@ function ajax_fix() {
 	$connection_id = $_POST['connection'];
 	$allowed       = apply_filters( 'dt_action_processing_allowed', true, $posts, $connection_id );
 
-	$response;
+	if ( $allowed && ! wp_doing_cron() ) {
+		/**
+		 * Add possibility to send notification in background
+		 *
+		 * @param bool      false           Whether to run clone fix in background or not, default 'false'
+		 * @param array     $posts          Posts for which need to run 'clone fix'
+		 * @param string    $connection_id  The connection id
+		 */
+		$fix_in_background = apply_filters( 'dt_clone_fix_allow_in_background', false, $posts, $connection_id );
+
+		if ( true === $fix_in_background ) {
+			wp_send_json_success(
+				array(
+					'results' => 'Scheduled a task.',
+				)
+			);
+
+			exit;
+		}
+	}
 
 	if ( $allowed ) {
 		$response = push_post_data( $posts, $connection_id );
@@ -50,6 +69,8 @@ function ajax_fix() {
  *
  * @param array $posts Array of post ids.
  * @param int   $connection_id Connection id to be fixed.
+ *
+ * @return array
  */
 function push_post_data( $posts, $connection_id ) {
 	$hosts = [];
