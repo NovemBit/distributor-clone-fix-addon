@@ -1,6 +1,6 @@
 # distributor-clone-fix-addon
 
-Distributor Clone Fix add-on is for extending the [Distributor Plugin](https://distributorplugin.com/) functionality to fix subscriptions if spoke was cloned
+Distributor Clone Fix add-on is for extending the [Distributor Plugin](https://distributorplugin.com/) functionality to fix subscriptions if destination site was cloned
 
 ## Requirements
 
