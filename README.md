@@ -19,7 +19,7 @@ Lets assume you've created external connection with distributor plugin from `Sou
 - Install `Distributor Clone Fix` add-on on both sides  ( `Source` & `Clone` ).
 - After You've installed add-on, `Fix Connection` action will appear in `wp-admin` post listing pages bulk actions. 
 ![screenshot](https://i.snag.gy/lr6Ca9.jpg)
-- Please note that post type must be distributable. see `distributable_post_types` function in `utils.php` [distributor plugin](https://github.com/NovemBit/distributor) 
+- Please note that post type must be distributable. see `distributable_post_types` function in `utils.php` [distributor plugin](https://github.com/NovemBit/distributor/blob/2a2acb9f1113e9e6a565ddf4ed2d5d2c025becb1/includes/utils.php#L276) 
 - Select Posts that you want to be fixed, then select `Fix Connection` from bulk actions and press `apply`. 
 - You will be prompted to select connection, for our example it will be connection created for `Clone`. Select it and press `apply` again. 
 - That's all! After action completed add-on will show you notification about success or failure.
