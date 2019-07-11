@@ -25,33 +25,7 @@ function setup() {
  *  Setup filters to show bulk clone fix in ui
  */
 function setup_bulk_fix() {
-	$list = [
-		'agreements',
-		'ai_galleries',
-		'application',
-		'banners',
-		'blocks',
-		'compliance-rule',
-		'documentation',
-		'events',
-		'faq',
-		'features',
-		'glossary',
-		'help',
-		'information',
-		'newsletters',
-		'page',
-		'post',
-		'presentations',
-		'product',
-		'resellers',
-		'services',
-		'shipping_option',
-		'shipping_package',
-		'shipping_validation',
-		'task',
-		'vacancies',
-	];
+	$list = \Distributor\Utils\distributable_post_types();
 	foreach ( $list as $screen ) {
 		add_filter( 'bulk_actions-edit-' . $screen, __NAMESPACE__ . '\display_bulk_fix' );
 		add_filter( 'handle_bulk_actions-edit-' . $screen, __NAMESPACE__ . '\handle_bulk_fix', 10, 3 );
