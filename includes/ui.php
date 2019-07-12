@@ -25,33 +25,7 @@ function setup() {
  *  Setup filters to show bulk clone fix in ui
  */
 function setup_bulk_fix() {
-	$list = [
-		'agreements',
-		'ai_galleries',
-		'application',
-		'banners',
-		'blocks',
-		'compliance-rule',
-		'documentation',
-		'events',
-		'faq',
-		'features',
-		'glossary',
-		'help',
-		'information',
-		'newsletters',
-		'page',
-		'post',
-		'presentations',
-		'product',
-		'resellers',
-		'services',
-		'shipping_option',
-		'shipping_package',
-		'shipping_validation',
-		'task',
-		'vacancies',
-	];
+	$list = \Distributor\Utils\distributable_post_types();
 	foreach ( $list as $screen ) {
 		add_filter( 'bulk_actions-edit-' . $screen, __NAMESPACE__ . '\display_bulk_fix' );
 		add_filter( 'handle_bulk_actions-edit-' . $screen, __NAMESPACE__ . '\handle_bulk_fix', 10, 3 );
@@ -77,8 +51,8 @@ function display_bulk_fix( $actions ) {
  */
 function add_bulk_script( $hook ) {
 	if ( 'edit.php' === $hook ) {
-		wp_enqueue_script( 'dt_bulk_clone_fix', plugins_url( 'build/js/bulk.js', __DIR__ ), [], CLONE_FIX_VERSION, true );
-		wp_enqueue_style( 'dt_bulk_clone_fix-styles', plugins_url( 'assets/css/bulk.css', __DIR__ ), [], CLONE_FIX_VERSION );
+		wp_enqueue_script( 'dt_bulk_clone_fix', plugins_url( 'build/js/bulk.min.js', __DIR__ ), [], CLONE_FIX_VERSION, true );
+		wp_enqueue_style( 'dt_bulk_clone_fix-styles', plugins_url( 'build/css/bulk.min.css', __DIR__ ), [], CLONE_FIX_VERSION );
 		wp_localize_script(
 			'dt_bulk_clone_fix',
 			'cloneFixData',
