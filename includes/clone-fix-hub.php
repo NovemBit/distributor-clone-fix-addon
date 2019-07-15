@@ -44,9 +44,9 @@ function ajax_fix() {
 		 * @param array     $posts          Posts for which need to run 'clone fix'
 		 * @param string    $connection_id  The connection id
 		 */
-		$fix_in_background = apply_filters( 'dt_allow_clone_fix', true, $posts, $connection_id );
+		$allow_clone_fix = apply_filters( 'dt_allow_clone_fix', true, $posts, $connection_id );
 
-		if ( false === $fix_in_background ) {
+		if ( false === $allow_clone_fix ) {
 			wp_send_json_success(
 				array(
 					'results' => 'Scheduled a task.',
