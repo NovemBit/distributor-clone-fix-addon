@@ -28,7 +28,7 @@ function setup_bulk_fix() {
 	$list = \Distributor\Utils\distributable_post_types();
 	foreach ( $list as $screen ) {
 		add_filter( 'bulk_actions-edit-' . $screen, __NAMESPACE__ . '\display_bulk_fix' );
-		add_filter( 'handle_bulk_actions-edit-' . $screen, __NAMESPACE__ . '\handle_bulk_fix', 10, 3 );
+
 	}
 }
 

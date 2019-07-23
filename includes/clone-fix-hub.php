@@ -32,7 +32,8 @@ function ajax_fix() {
 		wp_send_json_error();
 		exit;
 	}
-	$posts         = $_POST['posts'];
+	$posts = explode( ',', $_POST['posts'] );
+
 	$connection_id = $_POST['connection'];
 	$allowed       = apply_filters( 'dt_action_processing_allowed', true, $posts, $connection_id );
 
@@ -109,7 +110,6 @@ function push_post_data( $posts, $connection_id ) {
 			);
 			if ( ! is_wp_error( $response ) ) {
 				$data = json_decode( wp_remote_retrieve_body( $response ), true );
-
 				foreach ( $data as $post_id => $items ) {
 					$connection_map = get_post_meta( $post_id, 'dt_connection_map', true );
 					if ( empty( $connection_map ) || empty( $connection_map['external'] ) ) {
