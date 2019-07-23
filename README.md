@@ -11,7 +11,7 @@ Distributor Clone Fix add-on is for extending the [Distributor Plugin](https://d
 
 ## Plugin installation
 
-- You can build plugin yourself (see [development](#development-and-manual-builds)) or [download latest stable build](https://github.com/NovemBit/distributor-clone-fix-addon/releases/download/1.0/distributor-clone-fix-addon.zip)
+- You can build plugin yourself (see [development](#development-and-manual-builds)) or [download latest stable build](https://github.com/NovemBit/distributor-clone-fix-addon/releases/download/latest/distributor-clone-fix-addon.zip)
 
 ## Usage example
 
