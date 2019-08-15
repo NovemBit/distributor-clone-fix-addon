@@ -35,9 +35,8 @@ function ajax_fix() {
 	$posts = explode( ',', $_POST['posts'] );
 
 	$connection_id = $_POST['connection'];
-	$allowed       = apply_filters( 'dt_action_processing_allowed', true, $posts, $connection_id );
-
-	if ( $allowed && ! wp_doing_cron() ) {
+	
+	if (! wp_doing_cron() ) {
 		/**
 		 * Add possibility to send notification in background
 		 *
@@ -53,14 +52,13 @@ function ajax_fix() {
 					'results' => 'Scheduled a task.',
 				)
 			);
-
-			exit;
+			return;
 		}
 	}
 
-	if ( $allowed ) {
-		$response = push_post_data( $posts, $connection_id );
-	}
+
+	$response = push_post_data( $posts, $connection_id );
+
 	wp_send_json( apply_filters( 'dt_manage_clone_fix_response_hub', $response ) );
 	exit;
 }
