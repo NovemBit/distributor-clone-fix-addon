@@ -134,7 +134,20 @@ function push_post_data( $posts, $connection_id ) {
 						];
 
 						if ( ! empty( $items['remote_id'] ) && ! empty( $items['signature'] ) ) {
-							$subscription_id = \Distributor\Subscriptions\create_subscription( $post_id, $items['remote_id'], $host['host'], $items['signature'] );
+							$subscriptions = get_post_meta( $post_id, 'dt_subscriptions', true );
+							$subscription_id = 0;
+							if( !empty( $subscriptions ) && $subscriptions ){
+								foreach ( $subscriptions as $signature => $subscrib_id ) {
+									var_dump( [$signature, md5( $items['signature'] ) ]);
+									if( $signature == md5( $items['signature'] ) ){
+										$subscription_id = $subscrib_id;
+										break;
+									}
+								}
+							}
+							if( $subscription_id == 0 ){
+								$subscription_id = \Distributor\Subscriptions\create_subscription( $post_id, $items['remote_id'], $host['host'], $items['signature'] );
+							}
 						}
 					}
 					$result['data'][ $post_id ] = [ 'status' => 'success' ];
