@@ -35,7 +35,6 @@ function ajax_fix() {
 	$posts = explode( ',', $_POST['posts'] );
 
 	$connection_id = $_POST['connection'];
-	
 	if (! wp_doing_cron() ) {
 		/**
 		 * Add possibility to send notification in background
@@ -110,6 +109,21 @@ function push_post_data( $posts, $connection_id ) {
 				$data = json_decode( wp_remote_retrieve_body( $response ), true );
 				foreach ( $data as $post_id => $items ) {
 					$connection_map = get_post_meta( $post_id, 'dt_connection_map', true );
+					// case if product not exist in spoke
+					if( isset( $items[ 'error' ] ) && $items[ 'error' ] == true ){
+						if( isset( $connection_map[ 'external' ][ $connection_id ] ) ){
+							unset( $connection_map[ 'external' ][ $connection_id ] );
+							update_post_meta( $post_id, 'dt_connection_map', $connection_map );
+							\Distributor\Subscriptions\delete_subscriptions( $post_id );
+						}
+
+						$result['data'][ $post_id ] = [
+							'status' => 'failure',
+							'info'   => $items[ 'message' ],
+						];
+						continue;
+					}
+
 					if ( empty( $connection_map ) || empty( $connection_map['external'] ) ) {
 						$connection_map = [ 'external' => [] ];
 					}

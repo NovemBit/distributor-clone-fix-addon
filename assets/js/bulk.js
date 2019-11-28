@@ -126,6 +126,12 @@ document.addEventListener('DOMContentLoaded', () => {
 						errorContainer.appendChild(errorMsg);
 					});
 				} else {
+					if( typeof error === 'object' ){
+						const errorMsg = document.createElement('p');
+						errorMsg.innerText = error.info + '. Internal post id - ' + error.id;
+						errorContainer.appendChild(errorMsg);
+						return;
+					}
 					const errorMsg = document.createElement('p');
 					errorMsg.innerText = error;
 					errorContainer.appendChild(errorMsg);
