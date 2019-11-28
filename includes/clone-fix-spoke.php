@@ -39,8 +39,13 @@ function repair_posts( $data ) {
 	foreach ( $posts as $post_id ) {
 		$spoke_id = \Distributor\Utils\get_post_id_from_original_id( $post_id );
 		if ( ! empty( $spoke_id ) ) {
-			$signature = \Distributor\Subscriptions\generate_signature();
-			update_post_meta( $spoke_id, 'dt_subscription_signature', $signature );
+			$old_signature = get_post_meta( $spoke_id, 'dt_subscription_signature' );
+			if( !empty( $old_signature ) && $old_signature ){
+				$signature = $old_signature;
+			}else{
+				$signature = \Distributor\Subscriptions\generate_signature();
+				update_post_meta( $spoke_id, 'dt_subscription_signature', $signature );
+			}
 			$response[ $post_id ] = [
 				'remote_id' => $spoke_id,
 				'signature' => $signature,
