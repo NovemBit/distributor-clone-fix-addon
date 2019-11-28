@@ -35,25 +35,25 @@ function ajax_fix() {
 	$posts = explode( ',', $_POST['posts'] );
 
 	$connection_id = $_POST['connection'];
-	if (! wp_doing_cron() ) {
-		/**
-		 * Add possibility to send notification in background
-		 *
-		 * @param bool      true            Whether to run clone fix in background or not, default 'false'
-		 * @param array     $posts          Posts for which need to run 'clone fix'
-		 * @param string    $connection_id  The connection id
-		 */
-		$allow_clone_fix = apply_filters( 'dt_allow_clone_fix', true, $posts, $connection_id );
-
-		if ( false === $allow_clone_fix ) {
-			wp_send_json_success(
-				array(
-					'results' => 'Scheduled a task.',
-				)
-			);
-			return;
-		}
-	}
+//	if (! wp_doing_cron() ) {
+//		/**
+//		 * Add possibility to send notification in background
+//		 *
+//		 * @param bool      true            Whether to run clone fix in background or not, default 'false'
+//		 * @param array     $posts          Posts for which need to run 'clone fix'
+//		 * @param string    $connection_id  The connection id
+//		 */
+//		$allow_clone_fix = apply_filters( 'dt_allow_clone_fix', true, $posts, $connection_id );
+//
+//		if ( false === $allow_clone_fix ) {
+//			wp_send_json_success(
+//				array(
+//					'results' => 'Scheduled a task.',
+//				)
+//			);
+//			return;
+//		}
+//	}
 
 
 	$response = push_post_data( $posts, $connection_id );
