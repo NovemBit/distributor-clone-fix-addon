@@ -35,7 +35,6 @@ function ajax_fix() {
 	$posts = explode( ',', $_POST['posts'] );
 
 	$connection_id = $_POST['connection'];
-	
 	if (! wp_doing_cron() ) {
 		/**
 		 * Add possibility to send notification in background
@@ -74,8 +73,7 @@ function ajax_fix() {
 function push_post_data( $posts, $connection_id ) {
 	$hosts = [];
 	foreach ( $posts as $post_id ) {
-		$host                               = get_post_meta( $connection_id, 'dt_external_connection_url', true );
-		$hosts[ $connection_id ]['host']    = untrailingslashit( $host );
+		$hosts[ $connection_id ]['host']    = untrailingslashit( get_post_meta( $connection_id, 'dt_external_connection_url', true ) );
 		$hosts[ $connection_id ]['posts'][] = $post_id;
 	}
 
@@ -95,6 +93,7 @@ function push_post_data( $posts, $connection_id ) {
 			$external_connection_auth = get_post_meta( $connection_id, 'dt_external_connection_auth', true );
 			$auth_handler             = new $external_connection_class::$auth_handler_class( $external_connection_auth );
 
+			//TODO: we need to send and replace post ID as well.
 			$response = wp_remote_post(
 				$url,
 				$auth_handler->format_post_args(
@@ -106,23 +105,59 @@ function push_post_data( $posts, $connection_id ) {
 					]
 				)
 			);
+			
 			if ( ! is_wp_error( $response ) ) {
 				$data = json_decode( wp_remote_retrieve_body( $response ), true );
-				foreach ( $data as $post_id => $items ) {
+				foreach ( $data as $post_id => $remote_post_data ) {
+					// in case if post not found in spoke
+					if( isset( $remote_post_data[ 'error' ] ) && $remote_post_data[ 'error' ] == true ) {
+						//\Distributor\Logger\log( 'failed', 'clone fix', $connection_id, $post_id, [$remote_post_data[ 'message' ]], '' );
+						continue;
+					} elseif( empty( $remote_post_data['remote_id'] ) || empty( $remote_post_data['signature'] )) {
+						//\Distributor\Logger\log( 'failed', 'clone fix', $connection_id, $post_id, ['Post not found in spoke or non created signature'], '' );
+						continue;
+					}
+					
+					/* create or update connection map */
 					$connection_map = get_post_meta( $post_id, 'dt_connection_map', true );
 					if ( empty( $connection_map ) || empty( $connection_map['external'] ) ) {
 						$connection_map = [ 'external' => [] ];
 					}
-					if ( ! in_array( $connection_id, array_keys( $connection_map['external'] ), true ) ) {
-						$connection_map['external'][ $connection_id ] = [
-							'post_id' => $items['remote_id'],
-							'time'    => time(),
-						];
+					
+					$connection_map['external'][ $connection_id ] = [
+						'post_id' => $remote_post_data['remote_id'],
+						'time'    => time(),
+					];
+					
+					/* create or update subscription */
+					$subscriptions = get_post_meta( $post_id, 'dt_subscriptions', true );
+					if ( !empty( $subscriptions ) ) {
+						foreach ( $subscriptions as $subscription_key => $subscription_id ) {
+							$signature      = get_post_meta( $subscription_id, 'dt_subscription_signature', true );
+							$remote_post_id = get_post_meta( $subscription_id, 'dt_subscription_remote_post_id', true );
+							$target_url     = get_post_meta( $subscription_id, 'dt_subscription_target_url', true );
+							
+							if ( empty( $signature ) ) {
+								//\Distributor\Logger\log( 'failed', 'clone fix', $connection_id, $post_id, ['Empty internal signature'], '' );
+							}
 
-						if ( ! empty( $items['remote_id'] ) && ! empty( $items['signature'] ) ) {
-							$subscription_id = \Distributor\Subscriptions\create_subscription( $post_id, $items['remote_id'], $host['host'], $items['signature'] );
+							// compare subscriptions based on target URL, since we don't have connection ID
+							if ( untrailingslashit ( $target_url ) == $host['host'] ) {
+								
+								// if subscription's remote post ID doesn't much with distributed post ID
+								if ( $remote_post_id != $remote_post_data['remote_id'] ) {
+									//\Distributor\Logger\log( 'failed', 'clone fix', $connection_id, $post_id, [ 'Subscription\'s remote post ID doesn\'t much with distributed post ID' ], '' );
+								}
+								\Distributor\Subscriptions\delete_subscription($post_id, $signature);
+								continue;
+							}
 						}
 					}
+					
+					
+					\Distributor\Subscriptions\create_subscription( $post_id, $remote_post_data['remote_id'], $host['host'], $remote_post_data['signature'] );
+					
+					
 					$result['data'][ $post_id ] = [ 'status' => 'success' ];
 					update_post_meta( $post_id, 'dt_connection_map', $connection_map );
 					delete_post_meta( $post_id, 'dt_repair_post', $connection_id );

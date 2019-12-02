@@ -36,17 +36,17 @@ function register_routes() {
 function repair_posts( $data ) {
 	$posts    = $data->get_params();
 	$response = [];
-	foreach ( $posts as $post_id ) {
-		$spoke_id = \DT\NbAddon\CloneFix\Utils\get_post_from_original_id( $post_id );
-		if ( ! empty( $spoke_id ) ) {
+	foreach ( $posts as $original_post_id ) {
+		$post_id = \Distributor\Utils\get_post_id_from_original_id( $original_post_id );
+		if ( ! empty( $post_id ) ) {
 			$signature = \Distributor\Subscriptions\generate_signature();
-			update_post_meta( $spoke_id, 'dt_subscription_signature', $signature );
-			$response[ $post_id ] = [
-				'remote_id' => $spoke_id,
+			update_post_meta( $post_id, 'dt_subscription_signature', $signature );
+			$response[ $original_post_id ] = [
+				'remote_id' => $post_id,
 				'signature' => $signature,
 			];
 		} else {
-			$response[ $post_id ] = [
+			$response[ $original_post_id ] = [
 				'error'   => true,
 				'message' => 'Post does not exist in destination',
 			];
