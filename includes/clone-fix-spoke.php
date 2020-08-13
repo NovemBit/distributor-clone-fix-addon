@@ -22,8 +22,9 @@ function register_routes() {
 		'wp/v2',
 		'/distributor/repair-clone',
 		[
-			'methods'  => 'POST',
-			'callback' => __NAMESPACE__ . '\repair_posts',
+			'methods'             => 'POST',
+			'callback'            => __NAMESPACE__ . '\repair_posts',
+			'permission_callback' => '__return_true',
 		]
 	);
 }
